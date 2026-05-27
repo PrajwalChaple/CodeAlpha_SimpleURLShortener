@@ -84,36 +84,90 @@ Redirects the client to the original target and increments the click counter.
 
 ---
 
-## 🚀 Setup & Installation Guide
+## 🚀 Setup & Deployment Guide
 
-### Prerequisites
-- Python 3.10+ (Verified on Python 3.14)
-- Git (for source control)
+### ⚠️ A Note on GitHub Pages Deployment
+> [!WARNING]
+> **GitHub Pages only hosts static sites** (HTML, CSS, JS) and cannot run server-side code like Python Flask or databases like SQLite. 
+> 
+> Because of this, if you try to deploy this project directly to GitHub Pages:
+> 1. It will fall back to displaying the `README.md` file since there is no `index.html` file at the root level (it is in `templates/`).
+> 2. The dynamic database operations (shortening links and tracking clicks) will not work.
+> 
+> To run or deploy this app, follow either **Local Setup** or **Free Cloud Hosting (Render)** below.
 
-### Step 1: Clone the Repository
+---
+
+### 💻 Local Run Guide (Your Computer)
+
+#### Prerequisites
+- **Python 3.10+** (Verified on Python 3.14)
+- **Git** (for version control)
+
+#### Step 1: Open Terminal in Project Folder
+Clone the repository or navigate to your local project folder:
 ```bash
 git clone https://github.com/PrajwalChaple/CodeAlpha_SimpleURLShortener.git
 cd CodeAlpha_SimpleURLShortener
 ```
 
-### Step 2: Install Dependencies
-Install Flask from the standard `requirements.txt`:
+#### Step 2: Install Required Libraries
+Install Flask from the standard `requirements.txt` file:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: Run the Application
-Start the Flask dev server on your local system:
+#### Step 3: Start the Backend Server
+Run the Flask server using python:
 ```bash
 python app.py
 ```
-*The database file `db.sqlite3` will automatically be generated in the root directory upon startup!*
+*Note: Upon startup, the database file `db.sqlite3` will automatically be generated in the root directory!*
 
-### Step 4: Access the Console
+#### Step 4: Open Console in Browser
 Open your browser and navigate to:
 ```
 http://127.0.0.1:5000
 ```
+You can now shorten links, copy them, download QR codes, and track telemetry counters!
+
+---
+
+### ☁️ Free Cloud Deployment Guide (Render.com)
+
+To make your URL shortener accessible to anyone on the internet for free, deploy it on **Render.com**:
+
+#### Step 1: Add a WSGI Server (Gunicorn)
+To run Flask reliably in production, Gunicorn is recommended.
+1. Open `requirements.txt` and append `gunicorn` on a new line:
+   ```text
+   Flask>=3.0.0
+   gunicorn
+   ```
+2. Save the file and push this change to your GitHub repository:
+   ```bash
+   git add requirements.txt
+   git commit -m "chore: Add gunicorn dependency for cloud production hosting"
+   git push origin main
+   ```
+
+#### Step 2: Setup Web Service on Render
+1. Create a free account on [Render.com](https://render.com/).
+2. Click **New +** on the dashboard and select **Web Service**.
+3. Connect your GitHub account and select your repository: `CodeAlpha_SimpleURLShortener`.
+4. Configure the following settings during creation:
+   - **Name**: `tinypath-shortener` (or any name you like)
+   - **Region**: Select the closest region to you (e.g., Singapore or Oregon)
+   - **Branch**: `main`
+   - **Language**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+   - **Instance Type**: `Free` (Standard free tier)
+5. Click **Deploy Web Service**.
+
+#### Step 3: Access your Live URL
+Once the deployment status changes to **Live**, Render will provide you with a public URL (e.g., `https://tinypath-shortener.onrender.com`).
+Open the link to access your premium glassmorphic URL shortener console from anywhere on any device!
 
 ---
 
