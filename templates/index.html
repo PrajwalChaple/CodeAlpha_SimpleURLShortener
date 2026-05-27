@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyPath - Futuristic URL Shortener & Analytics</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Main JavaScript Logic (deferred) -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+<body>
+
+    <!-- Ambient Space Background Glows -->
+    <div class="ambient-bg">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+        <div class="glow-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Brand Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <h1>Tiny<span>Path</span></h1>
+            </div>
+            <p class="tagline">Compress your links. Track live telemetry. Forge connections.</p>
+        </header>
+
+        <!-- Main Workspace Card -->
+        <main class="main-card glass-panel">
+            <!-- Tabs Navigation -->
+            <div class="card-tabs">
+                <button class="tab-btn active" data-tab="shorten-tab">
+                    <i class="fa-solid fa-link"></i> Shorten Link
+                </button>
+                <button class="tab-btn" data-tab="analytics-tab">
+                    <i class="fa-solid fa-chart-simple"></i> Live Telemetry
+                </button>
+            </div>
+
+            <!-- Tab Content: Shortener -->
+            <div id="shorten-tab" class="tab-content active">
+                <form id="shorten-form" novalidate>
+                    <div class="input-group">
+                        <label for="long-url">Enter original destination URL</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-globe input-icon"></i>
+                            <input type="url" id="long-url" placeholder="https://example.com/very-long-and-complex-link" required autocomplete="off">
+                            <button type="submit" class="submit-btn">
+                                <span>Shorten</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="error-msg" id="url-error"></div>
+                    </div>
+                </form>
+
+                <!-- Result Slide-In Display -->
+                <div class="result-container glass-panel" id="result-box">
+                    <div class="result-header">
+                        <h3><i class="fa-regular fa-circle-check text-cyan"></i> Link Ready!</h3>
+                        <span class="badge">Short Code: <strong id="res-code">xyz</strong></span>
+                    </div>
+
+                    <div class="result-body">
+                        <div class="short-url-field">
+                            <input type="text" id="shortened-url" readonly>
+                            <div class="action-buttons">
+                                <button class="action-btn copy-btn" id="copy-btn" title="Copy to clipboard">
+                                    <i class="fa-regular fa-copy"></i>
+                                    <span class="tooltip">Copy Link</span>
+                                </button>
+                                <a href="" target="_blank" class="action-btn open-btn" id="open-btn" title="Open in new tab">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- QR Code Accordion -->
+                        <div class="qr-accordion">
+                            <button class="accordion-trigger" id="qr-toggle">
+                                <span><i class="fa-solid fa-qrcode"></i> Generate Link QR Code</span>
+                                <i class="fa-solid fa-chevron-down chevron"></i>
+                            </button>
+                            <div class="accordion-content" id="qr-content">
+                                <div class="qr-wrapper">
+                                    <div class="qr-loading" id="qr-loading">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Generating QR...
+                                    </div>
+                                    <img id="qr-code-img" src="" alt="Shortened link QR code" style="display: none;">
+                                    <a id="qr-download-btn" class="secondary-btn" style="display: none;" download="tinypath-qr.png">
+                                        <i class="fa-solid fa-download"></i> Save QR Image
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Analytics Telemetry -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="analytics-search">
+                    <label for="analytics-code">Input short code or URL</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                        <input type="text" id="analytics-code" placeholder="e.g., d3F8aB or http://127.0.0.1:5000/d3F8aB">
+                        <button class="submit-btn secondary" id="fetch-analytics-btn">
+                            <span>Track</span>
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </button>
+                    </div>
+                    <div class="error-msg" id="analytics-error"></div>
+                </div>
+
+                <!-- Live Metrics Display -->
+                <div class="metrics-display glass-panel" id="metrics-box" style="display: none;">
+                    <div class="metrics-header">
+                        <h3><i class="fa-solid fa-satellite-dish text-indigo pulse"></i> Live Stream Telemetry</h3>
+                        <button class="refresh-btn" id="refresh-metrics-btn" title="Sync latest data">
+                            <i class="fa-solid fa-arrows-rotate"></i> Sync
+                        </button>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Redirections</span>
+                            <span class="metric-value text-cyan" id="metric-clicks">0</span>
+                            <span class="metric-sub">Total active visits</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Created Time</span>
+                            <span class="metric-value-text" id="metric-date">-</span>
+                            <span class="metric-sub" id="metric-age">0 days ago</span>
+                        </div>
+                    </div>
+                    <div class="metrics-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Original Target:</span>
+                            <a href="" target="_blank" class="detail-value text-indigo" id="metric-target">-</a>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Short Code:</span>
+                            <span class="detail-value text-cyan" id="metric-code">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- User Link Registry (Session/LocalStorage History) -->
+        <section class="history-section">
+            <div class="history-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> Connection Repository</h2>
+                <span class="history-count" id="history-count">0 Links</span>
+            </div>
+
+            <div class="history-grid" id="history-grid">
+                <!-- Fallback empty state -->
+                <div class="history-empty" id="history-empty">
+                    <i class="fa-regular fa-folder-open empty-icon"></i>
+                    <p>No shortened paths registered in this console yet. Forge your first link above!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Toast Notification -->
+        <div class="toast" id="toast">
+            <i class="fa-solid fa-circle-check toast-icon"></i>
+            <span class="toast-message">Success! Link copied.</span>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 TinyPath URL Shortener. Engineered with Flask & Vanilla CSS/JS.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
