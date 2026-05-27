@@ -135,6 +135,7 @@ body {
     font-size: 2.2rem;
     background: linear-gradient(135deg, var(--neon-indigo), var(--neon-violet));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
 }
@@ -149,6 +150,7 @@ body {
 .logo h1 span {
     background: linear-gradient(to right, var(--neon-indigo), var(--neon-cyan));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
